@@ -1,59 +1,53 @@
 #include "include/data_processor.hpp"
 #include "include/can.hpp"
-#include "include/common_libraries.hpp" //Librerias Wifi y credenciales
+#include "include/common_libraries.hpp" 
 
 DataProcessor dataProcessor;
 CAN canController;
 
-// Cliente seguro para HTTPS
-WiFiClientSecure wifiClient;
+// Objeto UDP para manejar la conexión UDP
+WifiUDP udp; 
 
-// --- ENVIO DE DATOS A TRAVÉS DE WIFI ---
-// Esta función se ejecutará en paralelo sin bloquear el CAN
-void TaskWifiSender(void *pvParameters) {
-  
-  Serial.println("[WIFI-TASK] Iniciando tarea de envío...");
+//Configuración destino
+//Se debe de poner la IP del portatil trás conectar al Wifi del móvil
+const char* pc_ip = "192.168.43.155"; //Pongo una de prueba
 
-  while (true) {
-    // 1. Verificamos conexión WiFi
-    if (WiFi.status() == WL_CONNECTED) {
-      
-      HTTPClient http;
-      wifiClient.setInsecure(); // Importante para Firebase sin certificados complejos
+//Envio de datos a través de UDP
+void TaskUdpSender(void *pvParameters){
 
-      // 2. Preparamos el JSON
-      // Leemos la variable 'volatile' del dataProcessor
+  Serial.println("Iniciando tarea de envío..."); 
+
+  (while true){
+    if(WiFi.status() == WL_CONNECTED){
+
+      //Obtenemos el dato actual
       int tempActual = dataProcessor.current_ect_value; 
 
-      // Creamos la URL completa
-      String url = String(FIREBASE_HOST) + String(FIREBASE_PATH);
+      //Pasamos el dato actual a mensaje para enviarlo 
+      String mensaje = String(tempActual); 
+
+      //Enviamos el paquete a través de UDP
+      udp.beginPacket(pc_ip, UDP_PORT); 
+      udp.print(mensaje);               
+      udp.endPacket();        
       
-      // Creamos el payload JSON: {"valor": 95, "ts": 123456...}
-      String jsonPayload = "{\"valor\":" + String(tempActual) + "}";
-
-      // 3. Enviamos PUT o POST
-      http.begin(wifiClient, url);
-      int httpResponseCode = http.PUT(jsonPayload); // Usamos PUT para sobreescribir el valor actual
-
-      if (httpResponseCode > 0) {
-        Serial.printf("[WIFI] Enviado ECT: %d C° | Resp: %d\n", tempActual, httpResponseCode);
-      } else {
-        Serial.printf("[WIFI] Error envío: %s\n", http.errorToString(httpResponseCode).c_str());
-      }
-      http.end();
-
-    } else {
-      Serial.println("[WIFI] Desconectado. Reintentando...");
-      // Si se desconecta, intentar reconectar (opcionalmente)
-      WiFi.disconnect();
-      WiFi.reconnect();
+      //Para comprobar que el paquete se está enviado correctamente podemos usar estos prints
+      //Serial.print("UDP Enviado: ");
+      //Serial.println(mensaje);
     }
 
-    // 4. Esperar X tiempo antes del siguiente envío (ej. 1000ms = 1seg)
-    // Usamos vTaskDelay en lugar de delay() para no bloquear
-    vTaskDelay(1000 / portTICK_PERIOD_MS); 
+    else {
+        //Si no hay Wifi o no se consigue conectar, lo intentamos reconectar
+        Serial.println("[WIFI] Desconectado...");
+        WiFi.disconnect();
+        WiFi.reconnect();
+    }
+
+    //Ponemos de velocidad de envio 50ms, es ajustable 
+    vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
+
 
 void setup() {
     Serial.begin(115200);
@@ -67,34 +61,35 @@ void setup() {
     // 2. INICIAR WIFI 
     Serial.println("--- CONECTANDO WIFI ---");
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
     int intentos = 0;
     while (WiFi.status() != WL_CONNECTED && intentos < 20) {
         delay(500);
         Serial.print(".");
         intentos++;
     }
+
     if(WiFi.status() == WL_CONNECTED){
        Serial.println("\n[OK] WiFi Conectado.");
     } else {
        Serial.println("\n[ERR] No se pudo conectar WiFi (Continuando offline).");
     }
 
-    // 3. CREAR TAREA WIFI (Multitasking)
-    // Esto lanza la función TaskWifiSender en un núcleo aparte o hilo paralelo
+    //Creamos la tarea UDP para el envio de datos
+    //Usaremos el núcleo 1 o 0 ya que la ESP32 es Dual Core
     xTaskCreatePinnedToCore(
-      TaskWifiSender,   // Función de la tarea
-      "WifiSender",     // Nombre
-      8192,             // Tamaño de pila (Stack size)
-      NULL,             // Parámetros
-      1,                // Prioridad (Baja, para que el CAN tenga prioridad)
+      TaskUdpSender,    // Función que debe de ejecutar
+      "UdpSender",      // Nombre de la tarea 
+      4096,             // Stack size 
+      NULL,             // Parámetros extras?
+      1,                // Prioridad (1 = Baja, 10 = Alta, la ponemos 1 ya que el CAN debe de tener más prioridad)
       NULL,             // Handle
-      0                 // Núcleo (0 o 1)
+      0                 // Núcleo
     );
 
-    Serial.println("[OK] Sistema ONLINE (CAN + Pantalla + WiFi).");
+    Serial.println("OK CAN + UDP Sender ");
 }
 
 void loop(){ 
-    // El loop se queda SOLO para la interfaz gráfica (LVGL)
     vTaskDelay(5 / portTICK_PERIOD_MS);
 }

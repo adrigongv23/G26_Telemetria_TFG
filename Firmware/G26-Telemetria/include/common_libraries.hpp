@@ -6,17 +6,15 @@
 #include <ArduinoJson.h>
 #include <vector>
 
-//Librerías WiFi y HTTP ---
+//Librerías WiFi y UDP ---
 #include <WiFi.h>
-#include <HTTPClient.h>
-#include <WiFiClientSecure.h>
+#include <WifiUdp.h>
 
-// --- CONFIGURACIÓN WIFI Y FIREBASE ---
+//CONFIGURACIÓN WIFI Y FIREBASE 
 #define WIFI_SSID "test" 
 #define WIFI_PASSWORD "12345678"
 
-#define FIREBASE_HOST "https://iot-formula-gades-default-rtdb.europe-west1.firebasedatabase.app"
-// La ruta dentro de la base de datos donde guardaremos la temperatura
-#define FIREBASE_PATH "/telemetria/temperatura.json"
+//CONFIGURACIÓN WIFI Y FIREBASE
+#define UDP_PORT 4210
 
 #endif
