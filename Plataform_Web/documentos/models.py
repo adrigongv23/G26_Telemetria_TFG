@@ -11,7 +11,7 @@ class Documento(models.Model):
         ('suspension', 'Suspensión'),
         ('motor', 'Motor/Powertrain'),
         ('electronica', 'Electrónica'),
-        ('general', 'General / Normativa'),
+        ('normativa', 'General / Normativa'),
         ('software', 'Software')
     )
 

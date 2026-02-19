@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'users',
     'temporadas',
     'documentos',
+    'gestion', 
+    'pruebas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
