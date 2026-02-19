@@ -8,18 +8,22 @@ class Documento(models.Model):
     CATEGORIAS = (
         ('aerodinamica', 'Aerodinámica'),
         ('chasis', 'Chasis'),
-        ('suspension', 'Suspensión'),
-        ('motor', 'Motor/Powertrain'),
+        ('business', 'Business & Operations'),
+        ('epowertrain', 'E-Powertrain'),
         ('electronica', 'Electrónica'),
+        ('sdf', 'SDF'),
+        ('motor_transmision', 'Motor & Transmisión'),
+        ('software', 'Software'),
         ('normativa', 'General / Normativa'),
-        ('software', 'Software')
     )
 
     TIPO_DOC = (
+        ('fabricacion', 'Fabricación'),
         ('diseno', 'Diseño / CAD'),
+        ('concepto', 'Concepto'),
         ('simulacion', 'Simulación'),
         ('informe', 'Informe Técnico'),
-        ('factura', 'Factura / Presupuesto'),
+        ('tutorial', 'Tutorial'),
         ('otro', 'Otro'),
     )
 
