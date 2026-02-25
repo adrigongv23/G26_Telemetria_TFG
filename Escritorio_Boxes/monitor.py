@@ -2,12 +2,14 @@ import socket
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from collections import deque
+import time 
 from datetime import datetime              
 
 # --- CONFIGURACIÓN ---
 UDP_IP = "0.0.0.0"  # Escuchamos en Todas las interfaces posibles (WiFi, Ethernet...)
 UDP_PORT = 4210     # Mismo puerto que usamos para la ESP32
 MAX_PUNTOS = 200    # Vamos a mostrar en la gráfica los últimos 200 datos
+TIMEOUT_SEG = 1.5   # Para ver si existe desconexión
 
 # Cola de datos
 data_ect = deque([0]*MAX_PUNTOS, maxlen=MAX_PUNTOS)
@@ -43,6 +45,9 @@ props = dict(boxstyle='round', facecolor='black', alpha=0.8, edgecolor='white')
 txt_ect = ax1.text(0.02, 0.90, 'ESPERANDO...', transform=ax1.transAxes, 
                    fontsize=16, color='white', fontweight='bold', bbox=props)
 
+#Para controlar si existe una desconexión de envio de paquetes
+ultimo_tiempo_dato = time.time()
+
 def get_color(temp):
     if temp > 105:
         return '#ff3333' # ROJO (Peligro)
@@ -67,8 +72,9 @@ def update(frame):
                 val_ect = float(msg) # Convertimos texto a número 
 
                 data_ect.append(val_ect) # Guardamos el dato
-                color_actual = get_color(val_ect) # Para que el valor cambie de color segun la temepratura
+                ultimo_tiempo_dato = time.time() # Reiniciamos el contador ya que ha llegado un nuevo dato
 
+                color_actual = get_color(val_ect) # Para que el valor cambie de color segun la temepratura
                 txt_ect.set_text(f"TEMP: {val_ect: .1f} °C")
                 txt_ect.set_color(color_actual)
             
@@ -80,6 +86,14 @@ def update(frame):
     except Exception as e:
         print(f"Error: {e}")
 
+    # Comprobamos si el tiempo actual menos el último registro es mayor a 1.5s
+    if (time.time() - ultimo_tiempo_dato) > TIMEOUT_SEG:
+        data_ect.append(0) # Forzamos la gráfica a caer a 0
+        txt_ect.set_text("COCHE APAGADO")
+        txt_ect.set_color('#888888') # Color Gris
+        txt_ect.get_bbox_patch().set_edgecolor('#888888')
+        line_ect.set_color('#888888')
+    
     # Actualizamos la línea gráfica
     x_range = range(len(data_ect))
     line_ect.set_data(x_range, data_ect)
