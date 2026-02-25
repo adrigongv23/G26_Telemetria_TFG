@@ -6,7 +6,7 @@ DataProcessor dataProcessor;
 CAN canController;
 
 // Objeto UDP para manejar la conexión UDP
-WifiUDP udp; 
+WiFiUDP udp; 
 
 //Configuración destino
 //Se debe de poner la IP del portatil trás conectar al Wifi del móvil
@@ -17,7 +17,7 @@ void TaskUdpSender(void *pvParameters){
 
   Serial.println("Iniciando tarea de envío..."); 
 
-  (while true){
+  while (true){
     if(WiFi.status() == WL_CONNECTED){
 
       //Obtenemos el dato actual
