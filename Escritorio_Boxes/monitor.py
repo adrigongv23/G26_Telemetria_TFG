@@ -54,6 +54,17 @@ props = dict(boxstyle='round', facecolor='black', alpha=0.8, edgecolor='white')
 txt_ect = ax_ect.text(0.02, 0.85, 'ESPERANDO...', transform=ax_ect.transAxes, 
                    fontsize=16, color='white', fontweight='bold', bbox=props)
 
+# FUNCIÓN PARA EL COLOR DE LA TEMPERATURA
+def get_color(temp):
+    if temp > 105:
+        return '#ff3333' # ROJO (Peligro)
+    elif temp >= 95:
+        return '#ffff33' # AMARILLO (Precaución)
+    elif temp >= 65:
+        return '#33ff33' # VERDE (Ok)
+    else:
+        return '#33ffff' # AZUL (Frío)
+
 # --- 2. VELOCÍMETRO RPM (Fila inferior, Izquierda) ---
 ax_rpm = fig.add_subplot(gs[1, 0], projection='polar')
 ax_rpm.set_thetamin(0)
@@ -87,13 +98,13 @@ ax_batt.set_xlabel('Voltaje (V)', fontsize=12)
 borde = plt.Rectangle((MIN_BATT, -0.3), MAX_BATT-MIN_BATT, 0.6, fill=False, edgecolor='white', lw=2)
 ax_batt.add_patch(borde)
 
-# Barra interior amarilla/verde/roja
-bar_batt = ax_batt.barh(0, 0, left=MIN_BATT, height=0.5, color='green', align='center')[0]
+# Barra interior SIEMPRE NARANJA
+bar_batt = ax_batt.barh(0, 0, left=MIN_BATT, height=0.5, color='orange', align='center')[0]
 txt_batt = ax_batt.text(0.5, 0.8, 'BATT: -- V', transform=ax_batt.transAxes, ha='center', fontsize=18, fontweight='bold')
 
 
 def update(frame):
-    global ultimo_tiempo_dato # <--- ¡VITAL! Para poder modificar la variable global
+    global ultimo_tiempo_dato
 
     # 1. Actualizar el Reloj con la hora del PC
     ahora = datetime.now().strftime("%H:%M:%S")
@@ -115,7 +126,8 @@ def update(frame):
                 # 1. Actualizar ECT
                 data_ect.append(val_ect)
                 txt_ect.set_text(f"ECT: {val_ect:.1f} °C")
-                txt_ect.set_color('cyan')
+                # APLICAMOS LA FUNCIÓN DE COLOR AQUÍ:
+                txt_ect.set_color(get_color(val_ect))
 
                 # 2. Actualizar RPM 
                 val_rpm = max(0, min(MAX_RPM, val_rpm)) 
@@ -123,25 +135,27 @@ def update(frame):
                 needle.set_data([angulo_rad, angulo_rad], [0, 0.9])
                 txt_rpm.set_text(f"RPM: {int(val_rpm)}")
                 
-                if val_rpm > 12000: # Zona roja a partir de 12000
+                if val_rpm > 12000:
                     txt_rpm.set_color('red')
                     needle.set_color('red')
                 else:
                     txt_rpm.set_color('white')
                     needle.set_color('white')
 
-                # 3. Actualizar Batería (Progresión visual 0V a 20V)
-                txt_batt.set_text(f"BATT: {val_batt:.1f} V")
+                # 3. Actualizar Batería
                 ancho = max(0, min(MAX_BATT - MIN_BATT, val_batt - MIN_BATT))
                 bar_batt.set_width(ancho)
                 
-                # Colores adaptados para coche (Avisos de voltaje bajo)
-                if val_batt < 11.5:
-                    bar_batt.set_color('red')
-                elif val_batt < 12.5:
-                    bar_batt.set_color('yellow')
+                # Actualizar texto y cambiar su color
+                txt_batt.set_text(f"BATT: {val_batt:.1f} V")
+                
+                # Lógica de colores para el TEXTO de la batería
+                if val_batt > 15.0:
+                    txt_batt.set_color('green')
+                elif val_batt > 12.0:
+                    txt_batt.set_color('yellow')
                 else:
-                    bar_batt.set_color('green')
+                    txt_batt.set_color('red')
 
     except BlockingIOError:
         pass
@@ -155,9 +169,10 @@ def update(frame):
         txt_ect.set_color('#555555')
         txt_rpm.set_text("RPM: 0")
         txt_rpm.set_color('#555555')
-        needle.set_data([0, 0], [0, 0.9]) # Bajar aguja a 0
+        needle.set_data([0, 0], [0, 0.9])
         needle.set_color('#555555')
         txt_batt.set_text("BATT: APAGADO")
+        txt_batt.set_color('#555555')
         bar_batt.set_width(0)
 
     # Redibujar gráfica ECT
