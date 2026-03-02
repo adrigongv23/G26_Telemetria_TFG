@@ -16,7 +16,7 @@ TIMEOUT_SEG = 1.5   # Para ver si existe desconexión
 MAX_PUNTOS = 200    # Vamos a mostrar en la gráfica los últimos 200 datos
 MAX_RPM = 15000     # Límite máximo del velocímetro
 MIN_BATT = 0.0      # Mínimo voltaje para la gráfica
-MAX_BATT = 20.0     # Máximo voltaje para la gráfica
+MAX_BATT = 17.0     # Máximo voltaje para la gráfica
 
 # Cola de datos
 data_ect = deque([0]*MAX_PUNTOS, maxlen=MAX_PUNTOS)
@@ -135,7 +135,7 @@ def update(frame):
                 needle.set_data([angulo_rad, angulo_rad], [0, 0.9])
                 txt_rpm.set_text(f"RPM: {int(val_rpm)}")
                 
-                if val_rpm > 12000:
+                if val_rpm > 11000:
                     txt_rpm.set_color('red')
                     needle.set_color('red')
                 else:
