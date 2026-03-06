@@ -23,7 +23,7 @@ class Documento(models.Model):
         ('concepto', 'Concepto'),
         ('simulacion', 'Simulación'),
         ('dossier_patrocinado', 'Dossier Patrocinio'),
-        ('informe', 'Informe')
+        ('informe', 'Informe'),
         ('tutorial', 'Tutorial'),
         ('otro', 'Otro'),
     )
@@ -53,7 +53,7 @@ class Documento(models.Model):
         ordering = ['-fecha_subida']
 
     def __str__(self):
-        return f"{self.nombre} ({self.temporada})"
+        return f"{self.nombre} ({self.get_categoria_display()})"
 
     def delete(self, *args, **kwargs):
         # Esto borra el archivo físico del disco duro cuando borras la entrada en la base de datos
