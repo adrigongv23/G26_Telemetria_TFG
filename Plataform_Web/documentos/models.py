@@ -9,7 +9,7 @@ class Documento(models.Model):
         ('aerodinamica', 'Aerodinámica'),
         ('chasis', 'Chasis'),
         ('business', 'Business & Operations'),
-        ('epowertrain', 'E-Powertrain'),
+        ('e_powertrain', 'E-Powertrain'),
         ('electronica', 'Electrónica'),
         ('sdf', 'SDF'),
         ('motor_transmision', 'Motor & Transmisión'),
@@ -22,12 +22,14 @@ class Documento(models.Model):
         ('diseno', 'Diseño / CAD'),
         ('concepto', 'Concepto'),
         ('simulacion', 'Simulación'),
-        ('informe', 'Informe Técnico'),
+        ('dossier_patrocinado', 'Dossier Patrocinio'),
+        ('informe', 'Informe')
         ('tutorial', 'Tutorial'),
         ('otro', 'Otro'),
     )
 
-    titulo = models.CharField(max_length=100, verbose_name="Título del documento")
+    # CAMPOS
+    nombre = models.CharField(max_length=100, verbose_name="Nombre del documento")
     
     # Aquí definimos dónde se guardan los archivos. 
     # upload_to='ingenieria/' creará esa carpeta automáticamente.
@@ -35,25 +37,23 @@ class Documento(models.Model):
     
     categoria = models.CharField(max_length=20, choices=CATEGORIAS)
     tipo = models.CharField(max_length=20, choices=TIPO_DOC, default='informe')
+    descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción del documento")
+    fecha_subida = models.DateTimeField(auto_now_add=True)
     
-    descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción o notas")
+    # RELACIONES 
+    # Relacion Documento - Temporadas (Relación 1..* a 1..* )
+    temporada = models.ManyToManyField(Temporada, related_name="documentos_asociados")
     
-    # RELACIONES (La parte potente)
-    # 1. Si borras una temporada, ¿borramos sus documentos? -> models.CASCADE (Sí)
-    temporada = models.ForeignKey(Temporada, on_delete=models.CASCADE)
-    
-    # 2. Si borras un usuario, ¿borramos sus docs? -> models.SET_NULL (No, mejor mantenemos el doc y ponemos usuario a null)
+    # 2. Relación 1 a N con el Usuario (Miembros)
     subido_por = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name="documentos_subidos")
     
-    fecha_subida = models.DateTimeField(auto_now_add=True)
-
     class Meta:
-        verbose_name = "Documento Técnico"
-        verbose_name_plural = "Documentos de Ingeniería"
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"
         ordering = ['-fecha_subida']
 
     def __str__(self):
-        return f"{self.titulo} ({self.temporada})"
+        return f"{self.nombre} ({self.temporada})"
 
     def delete(self, *args, **kwargs):
         # Esto borra el archivo físico del disco duro cuando borras la entrada en la base de datos
@@ -61,3 +61,16 @@ class Documento(models.Model):
             if os.path.isfile(self.archivo.path):
                 os.remove(self.archivo.path)
         super().delete(*args, **kwargs)
+
+# Herencia de la clase Factura: Factura hereda de Documento
+class Factura(Documento):
+    # Al heredar de Documento, ya tiene nombre, archivo, categoria, etc.
+    empresa = models.CharField(max_length=100, verbose_name="Nombre de la empresa")
+    importe = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Importe (€)")
+
+    class Meta:
+        verbose_name = "Factura"
+        verbose_name_plural = "Facturas"
+
+    def __str__(self):
+        return f"Factura {self.empresa} - {self.importe}€"

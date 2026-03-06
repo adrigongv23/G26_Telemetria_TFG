@@ -6,13 +6,13 @@ class CustomUser(AbstractUser):
     ROL_CHOICES = (
         ('directiva', 'Directiva'),
         ('jefe_area', 'Jefe de Área'),
-        ('empleado', 'Empleado'),
+        ('miembro', 'Miembro'),
     )
 
     ESPECIALIDAD_CHOICES = (
         ('aerodinamica', 'Aerodinámica'),
         ('chasis', 'Chasis'),
-        ('business', 'Business & Operations'),
+        ('business_operations', 'Business & Operations'),
         ('epowertrain', 'E-Powertrain'),
         ('electronica', 'Electrónica'),
         ('sdf', 'SDF'),
@@ -25,7 +25,7 @@ class CustomUser(AbstractUser):
     rol = models.CharField(
         max_length=20, 
         choices=ROL_CHOICES, 
-        default='empleado',
+        default='miembro',
         verbose_name="Rol en el equipo"
     )
     

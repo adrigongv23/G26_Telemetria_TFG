@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Temporada(models.Model):
     # El nombre será algo como "Gades 2024-25"
@@ -13,8 +14,16 @@ class Temporada(models.Model):
     # Checkbox para marcar cuál es la temporada que estamos viviendo ahora
     actual = models.BooleanField(default=False, verbose_name="¿Es la temporada actual?")
 
+    # Relaciones 
+    # Relacion N a N con miembros
+    miembros = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, 
+        related_name="temporadas_participadas", 
+        blank=True,
+        verbose_name="Miembros del equipo"
+    )
+    
     class Meta:
-        # Esto es para que en el panel salga "Temporadas" y no "Temporadas"
         verbose_name = "Temporada"
         verbose_name_plural = "Temporadas"
         ordering = ['-fecha_inicio'] # Ordena las más nuevas primero
