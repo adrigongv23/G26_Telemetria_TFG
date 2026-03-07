@@ -16,10 +16,19 @@ void DataProcessor::send_serial(byte type, unsigned int value) {                
 
 //RPM + TPS + vBatt + ECT
 void DataProcessor::send_serial_frame_0(int rpmh, int rpml, int tpsh, int tpsl, int vbatth, int vbattl, int ect){
+
+    //Calculos necesarios para obtener bien el formato de los valores necesarios
+    int rpm = (rpmh * 256) + rpml
+    double vbatt = ((vbatth * 256) + vbattl) / 100.0;
+
     Serial.println("send_serial_frame_0");
 
-    this -> current_ect_value = ect; //Actualizamos el valor de ECT para que pueda ser usado por otras clases
-    //Serial.printf("CAN RX -> ECT: %d \n", ect);
+    // Actualizamos las variables globales para que puedan ser leidas por el protocolo UDP
+    this -> current_ect_value = ect; 
+    this->current_rpm_value = rpm;
+    this->current_vbatt_value = vbatt;
+
+    // Serial.printf("CAN RX -> ECT: %d | RPM: %d | BATT: %.1f \n", ect, rpm, vbatt);;
 }
 
 /*

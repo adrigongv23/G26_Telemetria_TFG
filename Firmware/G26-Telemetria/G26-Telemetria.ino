@@ -22,9 +22,11 @@ void TaskUdpSender(void *pvParameters){
 
       //Obtenemos el dato actual
       int tempActual = dataProcessor.current_ect_value; 
+      int rpmActual = dataProcessor.current_rpm_value;
+      float battActual = dataProcessor.current_vbatt_value;
 
       //Pasamos el dato actual a mensaje para enviarlo 
-      String mensaje = String(tempActual); 
+      String mensaje = String(tempActual) + "|" + String(rpmActual) + "|" + String(battActual, 1);
 
       //Enviamos el paquete a través de UDP
       udp.beginPacket(pc_ip, UDP_PORT); 
