@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio | Gades Manager{% endblock title %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="bg-dark text-white p-4 rounded-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap" style="border-left: 5px solid #0d6efd;">
+            <div>
+                <h1 class="display-6 fw-bold mb-1">Bienvenido, {{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="text-muted mb-0"> Panel de control de la plataforma de gestión interna.</p>
+            </div>
+            <div class="text-end mt-2 mt-md-0">
+                <span class="badge bg-primary fs-6 px-3 py-2 shadow-sm">
+                    Temporada Activa: {% if temporada_actual %}{{ temporada_actual.nombre }}{% else %}Ninguna activa{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    {% if user.rol != 'directiva' %}
+        
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body d-flex flex-column p-4">
+                    <h4 class="card-title fw-bold mb-3 text-dark">Mi Área Técnica</h4>
+                    <p class="card-text text-secondary flex-grow-1">
+                        Acceso directo al espacio de trabajo de tu departamento asignado. Permite consultar la documentación técnica interna, subir archivos y tramitar el buzón de compras.
+                    </p>
+                    <a href="#" class="btn btn-outline-primary w-100 mt-3 fw-bold">Acceder a mi Área</a>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <h4 class="card-title fw-bold mb-3 text-dark">Pruebas y Telemetría</h4>
+                <p class="card-text text-secondary flex-grow-1">
+                    Módulo destinado a la carga de registros de datos en formato CSV y al procesamiento de la telemetría del monoplaza para su posterior visualización gráfica.
+                </p>
+                <a href="#" class="btn btn-outline-primary w-100 mt-3 fw-bold">Ver Telemetría</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex flex-column p-4">
+                <h4 class="card-title fw-bold mb-3 text-dark">Miembros del Equipo</h4>
+                <p class="card-text text-secondary flex-grow-1">
+                    Directorio completo del personal. Permite buscar integrantes del equipo, consultar correos de contacto corporativos y verificar la distribución por departamentos.
+                </p>
+                <a href="#" class="btn btn-outline-primary w-100 mt-3 fw-bold">Ver Directorio</a>
+            </div>
+        </div>
+    </div>
+
+    {% if user.rol == 'directiva' %}
+        
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-top: 4px solid #ffc107;">
+                <div class="card-body d-flex flex-column p-4">
+                    <h4 class="card-title fw-bold mb-3 text-dark">Contabilidad Global</h4>
+                    <p class="card-text text-secondary flex-grow-1">
+                        Panel financiero de supervisión económica. Permite auditar el presupuesto global de la temporada, autorizar facturas técnicas y registrar los flujos de caja.
+                    </p>
+                    <a href="#" class="btn btn-warning w-100 mt-3 fw-bold text-dark">Gestionar Finanzas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm" style="border-top: 4px solid #ffc107;">
+                <div class="card-body d-flex flex-column p-4">
+                    <h4 class="card-title fw-bold mb-3 text-dark">Administración del Sistema</h4>
+                    <p class="card-text text-secondary flex-grow-1">
+                        Módulo avanzado de configuración global. Habilita la edición de usuarios del sistema, la asignación de roles de seguridad y la creación de nuevas temporadas.
+                    </p>
+                    <a href="#" class="btn btn-warning w-100 mt-3 fw-bold text-dark">Panel de Control</a>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock content %}

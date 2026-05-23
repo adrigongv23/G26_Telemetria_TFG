@@ -16,20 +16,14 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-
-# 1. IMPORTA TU VISTA NUEVA
-from gestion import views as gestion_views
+from django.urls import path, include
+from gestion import views  # Importamos las vistas de la app donde guardaste la función
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # 2. AÑADE ESTA RUTA (La cadena vacía '' significa "la página principal")
-    path('', gestion_views.home, name='home'),
+    # Ruta raíz: cuando entres a la web, cargará directamente nuestro Dashboard
+    path('', views.inicio, name='inicio'), 
+    
+    # Tus otras rutas de aplicaciones...
 ]
-
-# Configuración de archivos (esto déjalo como estaba)
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
