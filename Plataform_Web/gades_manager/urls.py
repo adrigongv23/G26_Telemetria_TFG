@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from gestion import views  # Importamos las vistas de la app donde guardaste la función
 
 urlpatterns = [
