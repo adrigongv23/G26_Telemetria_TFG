@@ -11,8 +11,11 @@
     <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
     
     {% block extra_head %}{% endblock extra_head %}
+    <style>
+        html, body { overflow: hidden; height: 100%; }
+    </style>
 </head>
-<body class="bg-light text-dark overflow-x-hidden d-flex flex-column min-vh-100">
+<body class="bg-light text-dark d-flex flex-column min-vh-100">
 
    <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container-fluid px-4">
@@ -87,7 +90,7 @@
         </div>
     </nav>
 
-    <main class="container-fluid py-4 px-4" style="min-height: calc(100vh - 140px);">
+    <main class="container-fluid py-3 px-4 flex-grow-1 d-flex flex-column" style="min-height: 0;">
         {% block content %}
         {% endblock content %}
     </main>

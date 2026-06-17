@@ -135,3 +135,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 MEDIA_URL = '/media/'  # La URL pública (ej: tudominio.com/media/archivo.pdf)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # La carpeta física en tu ordenador
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'inicio'
+LOGOUT_REDIRECT_URL = 'login'

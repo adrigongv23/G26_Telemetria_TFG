@@ -17,13 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from gestion import views  # Importamos las vistas de la app donde guardaste la función
+from django.contrib.auth import views as auth_views
+from gestion import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    # Ruta raíz: cuando entres a la web, cargará directamente nuestro Dashboard
-    path('', views.inicio, name='inicio'), 
-    
-    # Tus otras rutas de aplicaciones...
+    path('', views.inicio, name='inicio'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]

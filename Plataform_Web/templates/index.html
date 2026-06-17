@@ -4,9 +4,9 @@
 {% block title %}Inicio | Gades Manager{% endblock title %}
 
 {% block content %}
-<div class="row mb-4">
+<div class="row mb-3 flex-shrink-0">
     <div class="col-12">
-        <div class="bg-dark text-white p-4 rounded-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap" style="border-left: 5px solid #0d6efd;">
+        <div class="bg-dark text-white p-3 rounded-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap" style="border-left: 5px solid #0d6efd;">
             <div>
                 <h1 class="display-6 fw-bold mb-1">Bienvenido, {{ user.first_name }} {{ user.last_name }}</h1>
                 <p class="text-white-50 mb-0">Panel de control de la plataforma de gestión interna.</p>
@@ -20,12 +20,12 @@
     </div>
 </div>
 
-<div class="row g-4">
-    
-    <div class="col-12 col-lg-8 text-center">
-        <div class="shadow rounded-3 overflow-hidden">
-           <img src="{% static 'images/monoplaza_gades.jpg' %}" alt="Monoplaza Formula Gades" class="img-fluid rounded-3 d-block mx-auto"
-            style=" width: 100%; max-height: 70vh; object-fit: cover; ">
+<div class="row g-4 flex-grow-1" style="min-height: 0;">
+
+    <div class="col-12 col-lg-8 d-flex flex-column" style="min-height: 0;">
+        <div class="shadow rounded-3 overflow-hidden flex-grow-1" style="min-height: 0;">
+           <img src="{% static 'images/monoplaza_gades.jpg' %}" alt="Monoplaza Formula Gades"
+            style="width: 100%; height: 100%; object-fit: cover; display: block;">
         </div>
     </div>
 
