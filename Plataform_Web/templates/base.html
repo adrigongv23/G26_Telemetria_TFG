@@ -19,7 +19,7 @@
 
    <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
                 <img src="{% static 'images/logo_gades.png' %}" alt="Logo Gades" height="40" class="me-2">
             </a>
 
@@ -81,7 +81,7 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><span class="dropdown-item-text fw-bold text-muted">Hola, {{ user.first_name }}</span></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'mi_perfil' %}">Mi Perfil</a></li>
                             <li>
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
