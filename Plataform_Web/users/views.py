@@ -4,6 +4,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from .forms import PerfilForm
+from .models import CustomUser
 
 
 @login_required
@@ -37,3 +38,29 @@ def mi_perfil(request):
         'password_form': password_form,
     }
     return render(request, 'mi_perfil.html', context)
+
+
+@login_required
+def listado_miembros(request):
+    miembros = CustomUser.objects.all().order_by('last_name', 'first_name')
+
+    rol = request.GET.get('rol', '')
+    especialidad = request.GET.get('especialidad', '')
+    apellido = request.GET.get('apellido', '')
+
+    if rol:
+        miembros = miembros.filter(rol=rol)
+    if especialidad:
+        miembros = miembros.filter(especialidad=especialidad)
+    if apellido:
+        miembros = miembros.filter(last_name__icontains=apellido)
+
+    context = {
+        'miembros': miembros,
+        'rol_choices': CustomUser.ROL_CHOICES,
+        'especialidad_choices': CustomUser.ESPECIALIDAD_CHOICES,
+        'filtro_rol': rol,
+        'filtro_especialidad': especialidad,
+        'filtro_apellido': apellido,
+    }
+    return render(request, 'listado_miembros.html', context)

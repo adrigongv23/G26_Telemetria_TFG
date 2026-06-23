@@ -53,7 +53,7 @@
                         <a class="nav-link" href="#">Patrocinios</a>
                     </li>
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="#">Miembros</a>
+                        <a class="nav-link" href="{% url 'listado_miembros' %}">Miembros</a>
                     </li>
 
                     {% if user.is_authenticated and user.rol == 'directiva' %}
