@@ -62,11 +62,18 @@ class Documento(models.Model):
                 os.remove(self.archivo.path)
         super().delete(*args, **kwargs)
 
+ESTADO_FACTURA = [
+    ('pendiente', 'Pendiente'),
+    ('aceptada', 'Aceptada'),
+    ('rechazada', 'Rechazada'),
+]
+
 # Herencia de la clase Factura: Factura hereda de Documento
 class Factura(Documento):
     # Al heredar de Documento, ya tiene nombre, archivo, categoria, etc.
     empresa = models.CharField(max_length=100, verbose_name="Nombre de la empresa")
     importe = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Importe (€)")
+    estado = models.CharField(max_length=20, choices=ESTADO_FACTURA, default='pendiente')
 
     class Meta:
         verbose_name = "Factura"

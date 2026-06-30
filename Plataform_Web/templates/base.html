@@ -58,7 +58,7 @@
 
                     {% if user.is_authenticated and user.rol == 'directiva' %}
                         <li class="nav-item px-2">
-                            <a class="nav-link text-warning" href="#">Contabilidad</a>
+                            <a class="nav-link text-warning" href="{% url 'contabilidad' %}">Contabilidad</a>
                         </li>
 
                         <li class="nav-item dropdown px-2">

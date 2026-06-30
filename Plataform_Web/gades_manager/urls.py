@@ -36,4 +36,9 @@ urlpatterns = [
     path('gestion/temporadas/crear/', temporadas_views.crear_temporada, name='crear_temporada'),
     path('gestion/temporadas/<int:pk>/editar/', temporadas_views.editar_temporada, name='editar_temporada'),
     path('gestion/temporadas/<int:pk>/eliminar/', temporadas_views.eliminar_temporada, name='eliminar_temporada'),
+    path('gestion/contabilidad/', views.contabilidad, name='contabilidad'),
+    path('gestion/contabilidad/gasto/anadir/', views.anadir_gasto, name='anadir_gasto'),
+    path('gestion/contabilidad/ingreso/anadir/', views.anadir_ingreso, name='anadir_ingreso'),
+    path('gestion/contabilidad/factura/<int:pk>/aceptar/', views.aceptar_factura, name='aceptar_factura'),
+    path('gestion/contabilidad/factura/<int:pk>/rechazar/', views.rechazar_factura, name='rechazar_factura'),
 ]
