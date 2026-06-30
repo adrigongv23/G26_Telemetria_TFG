@@ -20,6 +20,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from gestion import views
 from users import views as users_views
+from temporadas import views as temporadas_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +32,8 @@ urlpatterns = [
     path('gestion/usuarios/', users_views.gestion_usuarios, name='gestion_usuarios'),
     path('gestion/usuarios/<int:pk>/editar/', users_views.editar_usuario, name='editar_usuario'),
     path('gestion/usuarios/<int:pk>/eliminar/', users_views.eliminar_usuario, name='eliminar_usuario'),
+    path('gestion/temporadas/', temporadas_views.gestion_temporadas, name='gestion_temporadas'),
+    path('gestion/temporadas/crear/', temporadas_views.crear_temporada, name='crear_temporada'),
+    path('gestion/temporadas/<int:pk>/editar/', temporadas_views.editar_temporada, name='editar_temporada'),
+    path('gestion/temporadas/<int:pk>/eliminar/', temporadas_views.eliminar_temporada, name='eliminar_temporada'),
 ]
