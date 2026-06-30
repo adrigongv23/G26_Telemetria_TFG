@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from .forms import PerfilForm
+from django.views.decorators.http import require_POST
+from .decorators import require_rol
+from .forms import PerfilForm, EditarUsuarioForm
 from .models import CustomUser
 
 
@@ -64,3 +66,54 @@ def listado_miembros(request):
         'filtro_apellido': apellido,
     }
     return render(request, 'listado_miembros.html', context)
+
+
+@require_rol('directiva')
+def gestion_usuarios(request):
+    usuarios = CustomUser.objects.all().order_by('last_name', 'first_name')
+
+    rol = request.GET.get('rol', '')
+    especialidad = request.GET.get('especialidad', '')
+    apellido = request.GET.get('apellido', '')
+
+    if rol:
+        usuarios = usuarios.filter(rol=rol)
+    if especialidad:
+        usuarios = usuarios.filter(especialidad=especialidad)
+    if apellido:
+        usuarios = usuarios.filter(last_name__icontains=apellido)
+
+    context = {
+        'usuarios': usuarios,
+        'rol_choices': CustomUser.ROL_CHOICES,
+        'especialidad_choices': CustomUser.ESPECIALIDAD_CHOICES,
+        'filtro_rol': rol,
+        'filtro_especialidad': especialidad,
+        'filtro_apellido': apellido,
+    }
+    return render(request, 'gestion_usuarios.html', context)
+
+
+@require_rol('directiva')
+def editar_usuario(request, pk):
+    usuario = get_object_or_404(CustomUser, pk=pk)
+
+    if request.method == 'POST':
+        form = EditarUsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'El usuario se ha actualizado correctamente.')
+            return redirect('gestion_usuarios')
+    else:
+        form = EditarUsuarioForm(instance=usuario)
+
+    return render(request, 'editar_usuario.html', {'form': form, 'usuario': usuario})
+
+
+@require_rol('directiva')
+@require_POST
+def eliminar_usuario(request, pk):
+    usuario = get_object_or_404(CustomUser, pk=pk)
+    usuario.delete()
+    messages.success(request, 'El usuario se ha eliminado correctamente.')
+    return redirect('gestion_usuarios')
