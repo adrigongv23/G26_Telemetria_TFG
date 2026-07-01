@@ -41,4 +41,8 @@ urlpatterns = [
     path('gestion/contabilidad/ingreso/anadir/', views.anadir_ingreso, name='anadir_ingreso'),
     path('gestion/contabilidad/factura/<int:pk>/aceptar/', views.aceptar_factura, name='aceptar_factura'),
     path('gestion/contabilidad/factura/<int:pk>/rechazar/', views.rechazar_factura, name='rechazar_factura'),
+    path('patrocinios/', views.patrocinios, name='patrocinios'),
+    path('patrocinios/proponer/', views.proponer_patrocinio, name='proponer_patrocinio'),
+    path('patrocinios/<int:pk>/editar/', views.editar_patrocinio, name='editar_patrocinio'),
+    path('patrocinios/<int:pk>/estado/', views.cambiar_estado_patrocinio, name='cambiar_estado_patrocinio'),
 ]

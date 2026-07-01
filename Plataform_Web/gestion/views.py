@@ -8,8 +8,8 @@ from datetime import date
 from temporadas.models import Temporada
 from documentos.models import Factura
 from users.decorators import require_rol
-from .models import Gasto, Ingreso
-from .forms import GastoForm, IngresoForm
+from .models import Gasto, Ingreso, Patrocinio
+from .forms import GastoForm, IngresoForm, PatrocinioForm, PatrocinioEditForm
 
 # Categorías válidas en Gasto (Documento usa 'normativa' en su lugar de 'general')
 _CATEGORIAS_GASTO_VALIDAS = {c[0] for c in Gasto.CATEGORIAS_GASTOS}
@@ -132,3 +132,71 @@ def rechazar_factura(request, pk):
     factura.save()
     messages.success(request, f'Factura de {factura.empresa} rechazada.')
     return redirect('contabilidad')
+
+
+@login_required
+def patrocinios(request):
+    temporada_actual = Temporada.objects.filter(actual=True).first()
+    pendientes = []
+    aceptados = []
+    denegados = []
+    if temporada_actual:
+        qs = Patrocinio.objects.filter(temporada=temporada_actual).select_related('contacto_equipo')
+        pendientes = qs.filter(estado='en_contacto')
+        aceptados = qs.filter(estado='aceptado')
+        denegados = qs.filter(estado='denegado')
+    return render(request, 'patrocinios.html', {
+        'temporada_actual': temporada_actual,
+        'pendientes': pendientes,
+        'aceptados': aceptados,
+        'denegados': denegados,
+        'form': PatrocinioForm(),
+    })
+
+
+@login_required
+@require_POST
+def proponer_patrocinio(request):
+    temporada_actual = Temporada.objects.filter(actual=True).first()
+    if not temporada_actual:
+        messages.error(request, 'No hay temporada activa. No se puede proponer un patrocinio.')
+        return redirect('patrocinios')
+
+    form = PatrocinioForm(request.POST)
+    if form.is_valid():
+        empresa = form.cleaned_data['empresa'].strip()
+        if Patrocinio.objects.filter(empresa__iexact=empresa, temporada=temporada_actual).exists():
+            messages.error(request, f'Ya existe un patrocinio con "{empresa}" en la temporada actual.')
+        else:
+            patrocinio = form.save(commit=False)
+            patrocinio.estado = 'en_contacto'
+            patrocinio.temporada = temporada_actual
+            patrocinio.contacto_equipo = request.user
+            patrocinio.save()
+            messages.success(request, f'Patrocinio de "{empresa}" propuesto correctamente.')
+    else:
+        messages.error(request, 'Error en el formulario. Revisa los datos.')
+    return redirect('patrocinios')
+
+
+@require_rol('directiva')
+def editar_patrocinio(request, pk):
+    patrocinio = get_object_or_404(Patrocinio, pk=pk)
+    form = PatrocinioEditForm(request.POST or None, instance=patrocinio)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Patrocinio actualizado correctamente.')
+        return redirect('patrocinios')
+    return render(request, 'editar_patrocinio.html', {'form': form, 'patrocinio': patrocinio})
+
+
+@require_rol('directiva')
+@require_POST
+def cambiar_estado_patrocinio(request, pk):
+    patrocinio = get_object_or_404(Patrocinio, pk=pk)
+    nuevo_estado = request.POST.get('estado')
+    if nuevo_estado in ('aceptado', 'denegado', 'en_contacto'):
+        patrocinio.estado = nuevo_estado
+        patrocinio.save()
+        messages.success(request, f'Estado de "{patrocinio.empresa}" actualizado.')
+    return redirect('patrocinios')
