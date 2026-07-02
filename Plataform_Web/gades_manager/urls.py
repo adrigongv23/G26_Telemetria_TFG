@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 from gestion import views
 from users import views as users_views
 from temporadas import views as temporadas_views
+from pruebas import views as pruebas_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,4 +46,10 @@ urlpatterns = [
     path('patrocinios/proponer/', views.proponer_patrocinio, name='proponer_patrocinio'),
     path('patrocinios/<int:pk>/editar/', views.editar_patrocinio, name='editar_patrocinio'),
     path('patrocinios/<int:pk>/estado/', views.cambiar_estado_patrocinio, name='cambiar_estado_patrocinio'),
+    path('pruebas/', pruebas_views.listado_pruebas, name='listado_pruebas'),
+    path('pruebas/nueva/', pruebas_views.crear_prueba, name='crear_prueba'),
+    path('pruebas/<int:pk>/', pruebas_views.detalle_prueba, name='detalle_prueba'),
+    path('pruebas/<int:pk>/editar/', pruebas_views.editar_prueba, name='editar_prueba'),
+    path('pruebas/<int:pk>/eliminar/', pruebas_views.eliminar_prueba, name='eliminar_prueba'),
+    path('pruebas/<int:pk>/csv/subir/', pruebas_views.subir_csv, name='subir_csv'),
 ]

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from temporadas.models import Temporada
+import os
 
 class Prueba(models.Model):
     CATEGORIAS_TEST = (
@@ -51,6 +52,13 @@ class Telemetria(models.Model):
 
     def __str__(self):
         return f"Telemetría: {self.nombre} (De: {self.prueba.nombre})"
+
+    def delete(self, *args, **kwargs):
+        # Borra el archivo físico del disco duro cuando borras la entrada en la base de datos
+        if self.archivo_csv:
+            if os.path.isfile(self.archivo_csv.path):
+                os.remove(self.archivo_csv.path)
+        super().delete(*args, **kwargs)
 
 
 class Variable(models.Model):
