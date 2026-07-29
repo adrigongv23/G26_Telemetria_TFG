@@ -26,6 +26,7 @@ from pruebas import views as pruebas_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio, name='inicio'),
+    path('areas/<str:especialidad>/', views.area_tecnica, name='area_tecnica'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('mi-perfil/', users_views.mi_perfil, name='mi_perfil'),
