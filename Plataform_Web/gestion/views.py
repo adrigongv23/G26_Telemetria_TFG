@@ -23,7 +23,18 @@ _CATEGORIAS_GASTO_VALIDAS = {c[0] for c in Gasto.CATEGORIAS_GASTOS}
 @login_required
 def inicio(request):
     temporada_activa = Temporada.objects.filter(actual=True).first()
-    return render(request, 'index.html', {'temporada_actual': temporada_activa})
+
+    area_color = None
+    area_color_dark = None
+    if request.user.especialidad:
+        area_color = get_area_color(request.user.especialidad)
+        area_color_dark = darken(area_color)
+
+    return render(request, 'index.html', {
+        'temporada_actual': temporada_activa,
+        'area_color': area_color,
+        'area_color_dark': area_color_dark,
+    })
 
 
 @login_required
