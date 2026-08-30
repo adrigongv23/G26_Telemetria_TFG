@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from .decorators import require_rol
-from .forms import PerfilForm, EditarUsuarioForm
+from .forms import PerfilForm, EditarUsuarioForm, CrearUsuarioForm
 from .models import CustomUser
 from .areas import get_area_nombre, get_area_color, es_gestor_area
 
@@ -122,6 +122,16 @@ def gestion_usuarios(request):
         'filtro_apellido': apellido,
     }
     return render(request, 'gestion_usuarios.html', context)
+
+
+@require_rol('directiva')
+def crear_usuario(request):
+    form = CrearUsuarioForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Usuario creado correctamente.')
+        return redirect('gestion_usuarios')
+    return render(request, 'editar_usuario.html', {'form': form, 'usuario': None})
 
 
 @require_rol('directiva')

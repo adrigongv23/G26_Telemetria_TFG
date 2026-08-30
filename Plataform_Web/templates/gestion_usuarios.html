@@ -6,9 +6,12 @@
 {% block content %}
 <div class="row mb-3 flex-shrink-0">
     <div class="col-12">
-        <div class="bg-dark text-white p-3 rounded-3 shadow-sm" style="border-left: 5px solid #0d6efd;">
-            <h1 class="display-6 fw-bold mb-1">Gestión de Usuarios</h1>
-            <p class="text-white-50 mb-0">Administra las cuentas del sistema: edita o elimina usuarios.</p>
+        <div class="bg-dark text-white p-3 rounded-3 shadow-sm d-flex justify-content-between align-items-center flex-wrap" style="border-left: 5px solid #0d6efd;">
+            <div>
+                <h1 class="display-6 fw-bold mb-1">Gestión de Usuarios</h1>
+                <p class="text-white-50 mb-0">Administra las cuentas del sistema: añade, edita o elimina usuarios.</p>
+            </div>
+            <a href="{% url 'crear_usuario' %}" class="btn btn-primary fw-bold">+ Añadir Usuario</a>
         </div>
     </div>
 </div>

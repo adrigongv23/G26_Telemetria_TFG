@@ -42,6 +42,7 @@ urlpatterns = [
     path('mi-perfil/', users_views.mi_perfil, name='mi_perfil'),
     path('miembros/', users_views.listado_miembros, name='listado_miembros'),
     path('gestion/usuarios/', users_views.gestion_usuarios, name='gestion_usuarios'),
+    path('gestion/usuarios/crear/', users_views.crear_usuario, name='crear_usuario'),
     path('gestion/usuarios/<int:pk>/editar/', users_views.editar_usuario, name='editar_usuario'),
     path('gestion/usuarios/<int:pk>/eliminar/', users_views.eliminar_usuario, name='eliminar_usuario'),
     path('gestion/temporadas/', temporadas_views.gestion_temporadas, name='gestion_temporadas'),
