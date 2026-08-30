@@ -8,8 +8,8 @@ class Documento(models.Model):
     CATEGORIAS = (
         ('aerodinamica', 'Aerodinámica'),
         ('chasis', 'Chasis'),
-        ('business', 'Business & Operations'),
-        ('e_powertrain', 'E-Powertrain'),
+        ('business_operations', 'Business & Operations'),
+        ('epowertrain', 'E-Powertrain'),
         ('electronica', 'Electrónica'),
         ('sdf', 'SDF'),
         ('motor_transmision', 'Motor & Transmisión'),
@@ -54,6 +54,10 @@ class Documento(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.get_categoria_display()})"
+
+    @property
+    def extension(self):
+        return os.path.splitext(self.archivo.name)[1].lstrip('.').upper()
 
     def delete(self, *args, **kwargs):
         # Esto borra el archivo físico del disco duro cuando borras la entrada en la base de datos

@@ -22,11 +22,16 @@ from gestion import views
 from users import views as users_views
 from temporadas import views as temporadas_views
 from pruebas import views as pruebas_views
+from documentos import views as documentos_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.inicio, name='inicio'),
     path('areas/<str:especialidad>/', views.area_tecnica, name='area_tecnica'),
+    path('areas/<str:especialidad>/documentos/', documentos_views.documentos_area, name='documentos_area'),
+    path('areas/<str:especialidad>/documentos/anadir/', documentos_views.anadir_documento, name='anadir_documento'),
+    path('documentos/<int:pk>/editar/', documentos_views.editar_documento, name='editar_documento'),
+    path('documentos/<int:pk>/eliminar/', documentos_views.eliminar_documento, name='eliminar_documento'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('mi-perfil/', users_views.mi_perfil, name='mi_perfil'),

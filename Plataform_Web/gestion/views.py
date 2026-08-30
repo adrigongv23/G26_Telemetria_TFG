@@ -11,37 +11,12 @@ from temporadas.models import Temporada
 from documentos.models import Factura
 from users.decorators import require_rol
 from users.models import CustomUser
+from users.areas import get_area_nombre, get_area_color, get_area_icon_path, darken
 from .models import Gasto, Ingreso, Patrocinio
 from .forms import GastoForm, IngresoForm, PatrocinioForm, PatrocinioEditForm
 
 # Categorías válidas en Gasto (Documento usa 'normativa' en su lugar de 'general')
 _CATEGORIAS_GASTO_VALIDAS = {c[0] for c in Gasto.CATEGORIAS_GASTOS}
-
-# Color de acento por área técnica, reutilizando la paleta ya cargada de Bootstrap
-AREA_COLORS = {
-    'aerodinamica': '#0dcaf0',
-    'chasis': '#6c757d',
-    'business_operations': '#fd7e14',
-    'epowertrain': '#198754',
-    'electronica': '#6610f2',
-    'sdf': '#6f42c1',
-    'motor_transmision': '#dc3545',
-    'software': '#20c997',
-}
-
-# Icono (trazo SVG, viewBox 24x24) por área técnica. Las áreas sin entrada
-# aquí usan el hexágono genérico como icono por defecto.
-AREA_ICONS = {
-    'software': 'M8 9l-4 3 4 3M16 9l4 3-4 3M14 6l-4 12',
-}
-AREA_ICON_DEFAULT = 'M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z'
-
-
-def _darken(hex_color, factor=0.55):
-    hex_color = hex_color.lstrip('#')
-    r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
-    r, g, b = (int(c * factor) for c in (r, g, b))
-    return f'#{r:02x}{g:02x}{b:02x}'
 
 
 @login_required
@@ -52,7 +27,7 @@ def inicio(request):
 
 @login_required
 def area_tecnica(request, especialidad):
-    area_nombre = dict(CustomUser.ESPECIALIDAD_CHOICES).get(especialidad)
+    area_nombre = get_area_nombre(especialidad)
     if area_nombre is None:
         raise Http404('Área técnica no reconocida.')
 
@@ -69,14 +44,14 @@ def area_tecnica(request, especialidad):
         responsable_nombre = 'Sin asignar'
         responsable_iniciales = '?'
 
-    area_color = AREA_COLORS.get(especialidad, '#0d6efd')
+    area_color = get_area_color(especialidad)
 
     return render(request, 'area_tecnica.html', {
         'especialidad': especialidad,
         'area_nombre': area_nombre,
         'area_color': area_color,
-        'area_color_dark': _darken(area_color),
-        'area_icon_path': AREA_ICONS.get(especialidad, AREA_ICON_DEFAULT),
+        'area_color_dark': darken(area_color),
+        'area_icon_path': get_area_icon_path(especialidad),
         'responsable_nombre': responsable_nombre,
         'responsable_iniciales': responsable_iniciales,
     })
