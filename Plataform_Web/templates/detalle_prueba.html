@@ -59,10 +59,42 @@
                 <h5 class="fw-semibold mb-3">Archivos de telemetría</h5>
                 <ul class="list-group list-group-flush mb-3">
                     {% for telemetria in prueba.archivos_telemetria.all %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <a href="{{ telemetria.archivo_csv.url }}">{{ telemetria.nombre }}</a>
-                            <span class="text-secondary small">{{ telemetria.fecha_subida|date:"d/m/Y" }}</span>
+                        <li class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold small">{{ telemetria.nombre }}</span>
+                                <span class="text-secondary small">{{ telemetria.fecha_subida|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="d-flex gap-2 mt-1">
+                                <a href="{% url 'ver_csv' telemetria.pk %}" class="btn btn-sm btn-primary fw-bold">Ver gráficas</a>
+                                <a href="{{ telemetria.archivo_csv.url }}" class="btn btn-sm btn-outline-secondary">Descargar CSV</a>
+                                {% if puede_subir_csv %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#eliminarTelemetriaModal{{ telemetria.pk }}">Eliminar</button>
+                                {% endif %}
+                            </div>
                         </li>
+
+                        {% if puede_subir_csv %}
+                        <div class="modal fade" id="eliminarTelemetriaModal{{ telemetria.pk }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirmar eliminación</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Seguro que quieres eliminar <strong>{{ telemetria.nombre }}</strong>? Esta acción no se puede deshacer.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <form method="post" action="{% url 'eliminar_telemetria' telemetria.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger fw-bold">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                     {% empty %}
                         <li class="list-group-item px-0 text-secondary small">No hay archivos subidos todavía.</li>
                     {% endfor %}

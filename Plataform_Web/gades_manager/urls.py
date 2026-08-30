@@ -63,4 +63,6 @@ urlpatterns = [
     path('pruebas/<int:pk>/editar/', pruebas_views.editar_prueba, name='editar_prueba'),
     path('pruebas/<int:pk>/eliminar/', pruebas_views.eliminar_prueba, name='eliminar_prueba'),
     path('pruebas/<int:pk>/csv/subir/', pruebas_views.subir_csv, name='subir_csv'),
+    path('pruebas/telemetria/<int:pk>/ver/', pruebas_views.ver_csv, name='ver_csv'),
+    path('pruebas/telemetria/<int:pk>/eliminar/', pruebas_views.eliminar_telemetria, name='eliminar_telemetria'),
 ]

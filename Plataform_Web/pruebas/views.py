@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from users.decorators import require_rol
 from temporadas.models import Temporada
-from .models import Prueba
+from .models import Prueba, Telemetria, Variable
 from .forms import PruebaForm, TelemetriaForm
+from .telemetry_parser import procesar_csv, canales_para_variables, TelemetriaCSVError
 
 
 def puede_subir_csv(user):
@@ -96,7 +97,55 @@ def subir_csv(request, pk):
         telemetria = form.save(commit=False)
         telemetria.prueba = prueba
         telemetria.save()
+
+        try:
+            canales = canales_para_variables(telemetria.archivo_csv.path)
+            Variable.objects.bulk_create([
+                Variable(telemetria=telemetria, nombre=label, unidad_medida=unidad, descripcion=f'Columna CSV: {columna}')
+                for columna, label, unidad in canales
+            ])
+        except Exception:
+            pass
+
         messages.success(request, 'Archivo de telemetría subido correctamente.')
     else:
         messages.error(request, 'No se pudo subir el archivo. Revisa el formulario.')
     return redirect('detalle_prueba', pk=prueba.pk)
+
+
+@login_required
+def ver_csv(request, pk):
+    telemetria = get_object_or_404(Telemetria, pk=pk)
+
+    try:
+        datos = procesar_csv(telemetria.archivo_csv.path)
+    except TelemetriaCSVError as exc:
+        messages.error(request, f'No se ha podido procesar el CSV: {exc}')
+        return redirect('detalle_prueba', pk=telemetria.prueba_id)
+    except (FileNotFoundError, OSError):
+        messages.error(request, 'El archivo CSV ya no existe en el servidor.')
+        return redirect('detalle_prueba', pk=telemetria.prueba_id)
+    except Exception:
+        messages.error(request, 'Ha ocurrido un error inesperado al procesar el CSV.')
+        return redirect('detalle_prueba', pk=telemetria.prueba_id)
+
+    return render(request, 'ver_csv.html', {
+        'telemetria': telemetria,
+        'prueba': telemetria.prueba,
+        'datos': datos,
+    })
+
+
+@login_required
+@require_POST
+def eliminar_telemetria(request, pk):
+    telemetria = get_object_or_404(Telemetria, pk=pk)
+    if not puede_subir_csv(request.user):
+        messages.error(request, 'No tienes permiso para eliminar archivos de telemetría.')
+        return redirect('detalle_prueba', pk=telemetria.prueba_id)
+
+    prueba_pk = telemetria.prueba_id
+    nombre = telemetria.nombre
+    telemetria.delete()
+    messages.success(request, f'"{nombre}" eliminado correctamente.')
+    return redirect('detalle_prueba', pk=prueba_pk)
