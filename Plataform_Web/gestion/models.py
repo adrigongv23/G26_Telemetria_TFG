@@ -67,8 +67,8 @@ class Gasto(Contabilidad):
     CATEGORIAS_GASTOS = (
         ('aerodinamica', 'Aerodinámica'),
         ('chasis', 'Chasis'),
-        ('business', 'Business & Operations'),
-        ('e_powertrain', 'E-Powertrain'),
+        ('business_operations', 'Business & Operations'),
+        ('epowertrain', 'E-Powertrain'),
         ('electronica', 'Electrónica'),
         ('sdf', 'SDF'),
         ('motor_transmision', 'Motor & Transmisión'),

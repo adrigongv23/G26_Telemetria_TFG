@@ -6,12 +6,13 @@ from django.db.models import Sum
 from datetime import date
 
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 
 from temporadas.models import Temporada
 from documentos.models import Factura
 from users.decorators import require_rol
 from users.models import CustomUser
-from users.areas import get_area_nombre, get_area_color, get_area_icon_path, darken
+from users.areas import get_area_nombre, get_area_color, get_area_icon_path, darken, es_gestor_area
 from .models import Gasto, Ingreso, Patrocinio
 from .forms import GastoForm, IngresoForm, PatrocinioForm, PatrocinioEditForm
 
@@ -135,14 +136,19 @@ def anadir_ingreso(request):
     return redirect('contabilidad')
 
 
-@require_rol('directiva')
+@login_required
 @require_POST
 def aceptar_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
+    if not es_gestor_area(request.user, factura.categoria):
+        raise PermissionDenied('Solo el Jefe de Área o Directiva pueden aceptar esta factura.')
+
+    next_url = request.POST.get('next') or 'contabilidad'
+
     temporada_actual = Temporada.objects.filter(actual=True).first()
     if not temporada_actual:
         messages.error(request, 'No hay temporada activa.')
-        return redirect('contabilidad')
+        return redirect(next_url)
 
     categoria = factura.categoria if factura.categoria in _CATEGORIAS_GASTO_VALIDAS else 'general'
     Gasto.objects.create(
@@ -157,17 +163,22 @@ def aceptar_factura(request, pk):
     factura.estado = 'aceptada'
     factura.save()
     messages.success(request, f'Factura de {factura.empresa} aceptada y registrada como gasto.')
-    return redirect('contabilidad')
+    return redirect(next_url)
 
 
-@require_rol('directiva')
+@login_required
 @require_POST
 def rechazar_factura(request, pk):
     factura = get_object_or_404(Factura, pk=pk)
+    if not es_gestor_area(request.user, factura.categoria):
+        raise PermissionDenied('Solo el Jefe de Área o Directiva pueden rechazar esta factura.')
+
+    next_url = request.POST.get('next') or 'contabilidad'
+
     factura.estado = 'rechazada'
     factura.save()
     messages.success(request, f'Factura de {factura.empresa} rechazada.')
-    return redirect('contabilidad')
+    return redirect(next_url)
 
 
 @login_required
