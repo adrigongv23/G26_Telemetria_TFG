@@ -14,7 +14,10 @@
                     {% if puede_gestionar %}Gestiona, acepta o rechaza las facturas subidas por el área.{% else %}Sube el resguardo de tus compras y consulta su estado.{% endif %}
                 </p>
             </div>
-            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnadirFactura">+ Añadir factura</button>
+            <div class="d-flex gap-2">
+                <a href="{% url 'area_tecnica' especialidad %}" class="btn btn-outline-light fw-bold"><i class="bi bi-arrow-left"></i> Volver al área</a>
+                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnadirFactura">+ Añadir factura</button>
+            </div>
         </div>
     </div>
 </div>

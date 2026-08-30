@@ -12,9 +12,12 @@
                 <h1 class="display-6 fw-bold mb-1">Documentos — {{ area_nombre }}</h1>
                 <p class="text-white-50 mb-0">Documentación técnica del área: normativa, diseño, informes y tutoriales.</p>
             </div>
-            {% if puede_anadir %}
-            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnadirDocumento">+ Añadir documento</button>
-            {% endif %}
+            <div class="d-flex gap-2">
+                <a href="{% url 'area_tecnica' especialidad %}" class="btn btn-outline-light fw-bold"><i class="bi bi-arrow-left"></i> Volver al área</a>
+                {% if puede_anadir %}
+                <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalAnadirDocumento">+ Añadir documento</button>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

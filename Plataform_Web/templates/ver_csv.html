@@ -11,7 +11,7 @@
                 <h1 class="display-6 fw-bold mb-1">Telemetría — {{ telemetria.nombre }}</h1>
                 <p class="text-white-50 mb-0">{{ prueba.nombre }} · {{ telemetria.fecha_subida|date:"d/m/Y H:i" }}</p>
             </div>
-            <a href="{% url 'detalle_prueba' prueba.pk %}" class="btn btn-outline-light fw-bold">Volver al test</a>
+            <a href="{% url 'detalle_prueba' prueba.pk %}" class="btn btn-outline-light fw-bold"><i class="bi bi-arrow-left"></i> Volver al test</a>
         </div>
     </div>
 </div>
