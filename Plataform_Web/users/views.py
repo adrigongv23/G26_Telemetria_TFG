@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from .decorators import require_rol
 from .forms import PerfilForm, EditarUsuarioForm
 from .models import CustomUser
+from .areas import get_area_nombre, get_area_color, es_gestor_area
 
 
 @login_required
@@ -66,6 +70,32 @@ def listado_miembros(request):
         'filtro_apellido': apellido,
     }
     return render(request, 'listado_miembros.html', context)
+
+
+@login_required
+def miembros_area(request, especialidad):
+    area_nombre = get_area_nombre(especialidad)
+    if area_nombre is None:
+        raise Http404('Área técnica no reconocida.')
+    if not es_gestor_area(request.user, especialidad):
+        raise PermissionDenied('Solo el Jefe de Área puede consultar esta lista.')
+
+    miembros = CustomUser.objects.filter(especialidad=especialidad).order_by('last_name', 'first_name')
+
+    busqueda = request.GET.get('busqueda', '')
+    if busqueda:
+        miembros = miembros.filter(
+            Q(first_name__icontains=busqueda) | Q(last_name__icontains=busqueda)
+        )
+
+    context = {
+        'especialidad': especialidad,
+        'area_nombre': area_nombre,
+        'area_color': get_area_color(especialidad),
+        'miembros': miembros,
+        'busqueda': busqueda,
+    }
+    return render(request, 'miembros_area.html', context)
 
 
 @require_rol('directiva')

@@ -53,6 +53,7 @@ def area_tecnica(request, especialidad):
         'area_color': area_color,
         'area_color_dark': darken(area_color),
         'area_icon_path': get_area_icon_path(especialidad),
+        'puede_ver_miembros': es_gestor_area(request.user, especialidad),
         'responsable_nombre': responsable_nombre,
         'responsable_iniciales': responsable_iniciales,
     })

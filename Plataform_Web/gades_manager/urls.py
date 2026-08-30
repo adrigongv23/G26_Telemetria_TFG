@@ -36,6 +36,7 @@ urlpatterns = [
     path('areas/<str:especialidad>/facturas/anadir/', documentos_views.anadir_factura, name='anadir_factura'),
     path('documentos/factura/<int:pk>/editar/', documentos_views.editar_factura, name='editar_factura'),
     path('documentos/factura/<int:pk>/eliminar/', documentos_views.eliminar_factura, name='eliminar_factura'),
+    path('areas/<str:especialidad>/miembros/', users_views.miembros_area, name='miembros_area'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('mi-perfil/', users_views.mi_perfil, name='mi_perfil'),

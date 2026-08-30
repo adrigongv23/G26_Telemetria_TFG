@@ -71,7 +71,11 @@
                     </div>
                     <h5 class="card-title fw-bold mb-1" style="font-size: .95rem;">Miembros</h5>
                     <p class="text-secondary small mb-2">Quién forma parte del área ahora mismo.</p>
-                    <span class="badge bg-light text-secondary border fw-normal">Próximamente</span>
+                    {% if puede_ver_miembros %}
+                        <a href="{% url 'miembros_area' especialidad %}" class="btn btn-outline-primary btn-sm fw-bold">Ver miembros</a>
+                    {% else %}
+                        <span class="badge bg-light text-secondary border fw-normal">Solo Jefe de Área</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
