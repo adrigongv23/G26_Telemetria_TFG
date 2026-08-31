@@ -73,7 +73,7 @@
 </div>
 
 {# ── Bloque 2: Gastos | Ingresos ── #}
-<div class="row g-3 mb-3" style="overflow-y: auto; max-height: 340px;">
+<div class="row g-3 mb-3" style="overflow-y: auto; overflow-x: hidden; max-height: 340px;">
 
     {# Columna Gastos #}
     <div class="col-12 col-md-6">
@@ -83,7 +83,7 @@
                     <h6 class="fw-bold mb-0 text-danger">Gastos</h6>
                     <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGasto">+ Añadir</button>
                 </div>
-                <div style="max-height: 220px; overflow-y: auto;">
+                <div style="max-height: 220px; overflow-y: auto; overflow-x: hidden;">
                     {% if gastos %}
                         <ul class="list-group list-group-flush">
                             {% for gasto in gastos %}
@@ -112,7 +112,7 @@
                     <h6 class="fw-bold mb-0 text-success">Ingresos</h6>
                     <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalIngreso">+ Añadir</button>
                 </div>
-                <div style="max-height: 220px; overflow-y: auto;">
+                <div style="max-height: 220px; overflow-y: auto; overflow-x: hidden;">
                     {% if ingresos %}
                         <ul class="list-group list-group-flush">
                             {% for ingreso in ingresos %}

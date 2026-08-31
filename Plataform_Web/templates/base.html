@@ -12,6 +12,11 @@
     {% block extra_head %}{% endblock extra_head %}
     <style>
         html, body { overflow: hidden; height: 100%; }
+
+        @media (max-width: 991.98px) {
+            html, body { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100%; }
+            .area-photo-wrapper { max-height: 40vh; }
+        }
     </style>
 </head>
 <body class="bg-light text-dark d-flex flex-column min-vh-100">

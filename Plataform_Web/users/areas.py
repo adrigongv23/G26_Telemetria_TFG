@@ -19,6 +19,20 @@ AREA_ICONS = {
 }
 AREA_ICON_DEFAULT = 'M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z'
 
+# Foto de cabecera por área técnica (static/images/areas/). Las áreas sin
+# entrada aquí usan la foto genérica del monoplaza como reserva.
+AREA_IMAGES = {
+    'aerodinamica': 'images/areas/aerodinamica.png',
+    'chasis': 'images/areas/chasis.jpeg',
+    'electronica': 'images/areas/electronica.png',
+    'motor_transmision': 'images/areas/motor_transmision.png',
+    'epowertrain': 'images/areas/epowertrain.jpg',
+    'sdf': 'images/areas/sdf.png',
+    'business_operations': 'images/areas/business_operations.webp',
+    'software': 'images/areas/software.jpg',
+}
+AREA_IMAGE_DEFAULT = 'images/monoplaza_gades.jpg'
+
 
 def darken(hex_color, factor=0.55):
     hex_color = hex_color.lstrip('#')
@@ -37,6 +51,10 @@ def get_area_color(especialidad):
 
 def get_area_icon_path(especialidad):
     return AREA_ICONS.get(especialidad, AREA_ICON_DEFAULT)
+
+
+def get_area_imagen(especialidad):
+    return AREA_IMAGES.get(especialidad, AREA_IMAGE_DEFAULT)
 
 
 def es_miembro_area(user, especialidad):

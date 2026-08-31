@@ -9,10 +9,10 @@ from django.http import Http404
 from django.core.exceptions import PermissionDenied
 
 from temporadas.models import Temporada
-from documentos.models import Factura
+from documentos.models import Documento, Factura
 from users.decorators import require_rol
 from users.models import CustomUser
-from users.areas import get_area_nombre, get_area_color, get_area_icon_path, darken, es_gestor_area
+from users.areas import get_area_nombre, get_area_color, get_area_imagen, darken, es_gestor_area
 from .models import Gasto, Ingreso, Patrocinio
 from .forms import GastoForm, IngresoForm, PatrocinioForm, PatrocinioEditForm
 
@@ -63,10 +63,13 @@ def area_tecnica(request, especialidad):
         'area_nombre': area_nombre,
         'area_color': area_color,
         'area_color_dark': darken(area_color),
-        'area_icon_path': get_area_icon_path(especialidad),
+        'area_imagen': get_area_imagen(especialidad),
         'puede_ver_miembros': es_gestor_area(request.user, especialidad),
         'responsable_nombre': responsable_nombre,
         'responsable_iniciales': responsable_iniciales,
+        'num_documentos': Documento.objects.filter(categoria=especialidad).count(),
+        'num_facturas': Factura.objects.filter(categoria=especialidad).count(),
+        'num_miembros': CustomUser.objects.filter(especialidad=especialidad).count(),
     })
 
 
