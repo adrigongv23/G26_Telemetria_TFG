@@ -39,11 +39,25 @@
                     </svg>
                 </div>
                 <h5 class="fw-bold mb-1">Dossier de Patrocinio</h5>
-                <p class="text-secondary small mb-3">Versión en español · Temporada 2025/2026</p>
-                <div class="d-flex gap-2">
-                    <a href="{% static 'dossiers/Dossier_2025_2026.pdf' %}" target="_blank" class="btn btn-outline-primary fw-bold">Abrir</a>
-                    <a href="{% static 'dossiers/Dossier_2025_2026.pdf' %}" download class="btn btn-primary fw-bold">Descargar</a>
+                <p class="text-secondary small mb-3">
+                    Versión en español ·
+                    {% if dossier_es %}Temporada {{ temporada_actual.nombre }}{% else %}Temporada 2025/2026 (por defecto){% endif %}
+                </p>
+                <div class="d-flex gap-2 mb-2">
+                    <a href="{% if dossier_es %}{{ dossier_es.archivo.url }}{% else %}{% static 'dossiers/Dossier_2025_2026.pdf' %}{% endif %}" target="_blank" class="btn btn-outline-primary fw-bold">Abrir</a>
+                    <a href="{% if dossier_es %}{{ dossier_es.archivo.url }}{% else %}{% static 'dossiers/Dossier_2025_2026.pdf' %}{% endif %}" download class="btn btn-primary fw-bold">Descargar</a>
                 </div>
+                {% if user.rol == 'directiva' %}
+                    {% if temporada_actual %}
+                        <form method="post" action="{% url 'subir_dossier' 'es' %}" enctype="multipart/form-data" class="d-flex gap-2 w-100 mt-1">
+                            {% csrf_token %}
+                            <input type="file" name="archivo" accept="application/pdf" class="form-control form-control-sm" required>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold text-nowrap">Cambiar</button>
+                        </form>
+                    {% else %}
+                        <p class="text-secondary small mb-0">Activa una temporada para poder subir un dossier nuevo.</p>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -58,11 +72,25 @@
                     </svg>
                 </div>
                 <h5 class="fw-bold mb-1">Sponsorship Dossier</h5>
-                <p class="text-secondary small mb-3">English version · Season 2025/2026</p>
-                <div class="d-flex gap-2">
-                    <a href="{% static 'dossiers/DossierEN_2025_2026.pdf' %}" target="_blank" class="btn btn-outline-primary fw-bold">Open</a>
-                    <a href="{% static 'dossiers/DossierEN_2025_2026.pdf' %}" download class="btn btn-primary fw-bold">Download</a>
+                <p class="text-secondary small mb-3">
+                    English version ·
+                    {% if dossier_en %}Season {{ temporada_actual.nombre }}{% else %}Season 2025/2026 (default){% endif %}
+                </p>
+                <div class="d-flex gap-2 mb-2">
+                    <a href="{% if dossier_en %}{{ dossier_en.archivo.url }}{% else %}{% static 'dossiers/DossierEN_2025_2026.pdf' %}{% endif %}" target="_blank" class="btn btn-outline-primary fw-bold">Open</a>
+                    <a href="{% if dossier_en %}{{ dossier_en.archivo.url }}{% else %}{% static 'dossiers/DossierEN_2025_2026.pdf' %}{% endif %}" download class="btn btn-primary fw-bold">Download</a>
                 </div>
+                {% if user.rol == 'directiva' %}
+                    {% if temporada_actual %}
+                        <form method="post" action="{% url 'subir_dossier' 'en' %}" enctype="multipart/form-data" class="d-flex gap-2 w-100 mt-1">
+                            {% csrf_token %}
+                            <input type="file" name="archivo" accept="application/pdf" class="form-control form-control-sm" required>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold text-nowrap">Change</button>
+                        </form>
+                    {% else %}
+                        <p class="text-secondary small mb-0">Activate a season to upload a new dossier.</p>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>

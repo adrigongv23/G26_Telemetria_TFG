@@ -12,12 +12,20 @@ from temporadas.models import Temporada
 from documentos.models import Documento, Factura
 from users.decorators import require_rol
 from users.models import CustomUser
-from users.areas import get_area_nombre, get_area_color, get_area_imagen, darken, es_gestor_area
+from users.areas import get_area_nombre, get_area_color, get_area_imagen, darken, es_gestor_area, es_miembro_area
 from .models import Gasto, Ingreso, Patrocinio
 from .forms import GastoForm, IngresoForm, PatrocinioForm, PatrocinioEditForm
 
 # Categorías válidas en Gasto (Documento usa 'normativa' en su lugar de 'general')
 _CATEGORIAS_GASTO_VALIDAS = {c[0] for c in Gasto.CATEGORIAS_GASTOS}
+
+# Nombre fijo con el que se identifica el Documento que hace de dossier de
+# patrocinio de cada temporada (uno por idioma), para poder localizarlo sin
+# necesidad de un campo extra en el modelo.
+DOSSIER_NOMBRES = {
+    'es': 'Dossier de Patrocinio (ES)',
+    'en': 'Dossier de Patrocinio (EN)',
+}
 
 
 @login_required
@@ -64,6 +72,7 @@ def area_tecnica(request, especialidad):
         'area_color': area_color,
         'area_color_dark': darken(area_color),
         'area_imagen': get_area_imagen(especialidad),
+        'puede_ver_facturas': es_miembro_area(request.user, especialidad),
         'puede_ver_miembros': es_gestor_area(request.user, especialidad),
         'responsable_nombre': responsable_nombre,
         'responsable_iniciales': responsable_iniciales,
@@ -202,18 +211,59 @@ def patrocinios(request):
     pendientes = []
     aceptados = []
     denegados = []
+    dossier_es = None
+    dossier_en = None
     if temporada_actual:
         qs = Patrocinio.objects.filter(temporada=temporada_actual).select_related('contacto_equipo')
         pendientes = qs.filter(estado='en_contacto')
         aceptados = qs.filter(estado='aceptado')
         denegados = qs.filter(estado='denegado')
+        dossier_es = Documento.objects.filter(
+            temporada=temporada_actual, tipo='dossier_patrocinado', nombre=DOSSIER_NOMBRES['es']
+        ).order_by('-fecha_subida').first()
+        dossier_en = Documento.objects.filter(
+            temporada=temporada_actual, tipo='dossier_patrocinado', nombre=DOSSIER_NOMBRES['en']
+        ).order_by('-fecha_subida').first()
     return render(request, 'patrocinios.html', {
         'temporada_actual': temporada_actual,
         'pendientes': pendientes,
         'aceptados': aceptados,
         'denegados': denegados,
+        'dossier_es': dossier_es,
+        'dossier_en': dossier_en,
         'form': PatrocinioForm(),
     })
+
+
+@require_rol('directiva')
+@require_POST
+def subir_dossier(request, idioma):
+    if idioma not in DOSSIER_NOMBRES:
+        raise Http404('Idioma de dossier no reconocido.')
+
+    temporada_actual = Temporada.objects.filter(actual=True).first()
+    if not temporada_actual:
+        messages.error(request, 'No hay temporada activa. Activa una temporada para poder subir el dossier.')
+        return redirect('patrocinios')
+
+    archivo = request.FILES.get('archivo')
+    if not archivo:
+        messages.error(request, 'Selecciona un archivo PDF.')
+        return redirect('patrocinios')
+
+    nombre = DOSSIER_NOMBRES[idioma]
+    # Sustituye el dossier de esa temporada e idioma si ya existía uno.
+    Documento.objects.filter(temporada=temporada_actual, tipo='dossier_patrocinado', nombre=nombre).delete()
+    documento = Documento.objects.create(
+        nombre=nombre,
+        archivo=archivo,
+        categoria='normativa',
+        tipo='dossier_patrocinado',
+        subido_por=request.user,
+    )
+    documento.temporada.add(temporada_actual)
+    messages.success(request, f'Dossier ({idioma.upper()}) actualizado para la temporada {temporada_actual.nombre}.')
+    return redirect('patrocinios')
 
 
 @login_required

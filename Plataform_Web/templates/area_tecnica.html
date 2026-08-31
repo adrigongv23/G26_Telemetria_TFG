@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm flex-grow-1" style="min-height: 0; border-left: 4px solid {{ area_color }} !important;">
+            <div class="card border-0 shadow-sm flex-grow-1 {% if not puede_ver_facturas %}opacity-75{% endif %}" style="min-height: 0; border-left: 4px solid {{ area_color }} !important;">
                 <div class="card-body p-3 d-flex align-items-center gap-3" style="min-height: 0; overflow: hidden;">
                     <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
                          style="width: 52px; height: 52px; font-size: 1.4rem; background-color: {{ area_color }}22; color: {{ area_color_dark }};">
@@ -67,7 +67,11 @@
                     </div>
                     <div class="text-end flex-shrink-0">
                         <div class="fw-bold" style="font-size: 1.6rem; color: {{ area_color_dark }}; line-height: 1;">{{ num_facturas }}</div>
-                        <a href="{% url 'facturas_area' especialidad %}" class="fw-bold text-decoration-none small" style="color: {{ area_color_dark }};">Ver →</a>
+                        {% if puede_ver_facturas %}
+                            <a href="{% url 'facturas_area' especialidad %}" class="fw-bold text-decoration-none small" style="color: {{ area_color_dark }};">Ver →</a>
+                        {% else %}
+                            <span class="text-secondary small">Solo miembros</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
