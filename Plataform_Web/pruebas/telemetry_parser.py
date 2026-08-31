@@ -11,16 +11,16 @@ COLUMNAS_EXCLUIDAS = {'n_muestra', 'hora', COLUMNA_TIEMPO, 'freno_tra'}
 # igualmente (con su nombre de columna tal cual y sin unidad) para que un CSV
 # con canales nuevos no rompa el procesado.
 CANALES = {
-    'ect': {'label': 'Temperatura refrigerante (ECT)', 'unidad': '°C'},
+    'ect': {'label': 'Temperatura motor (ECT)', 'unidad': '°C'},
     'rpm': {'label': 'RPM', 'unidad': 'rpm'},
     'velocidad': {'label': 'Velocidad', 'unidad': 'km/h'},
-    'vbatt': {'label': 'Voltaje batería', 'unidad': 'V'},
+    'vbatt': {'label': 'Batería', 'unidad': 'V'},
     'tps': {'label': 'Acelerador', 'unidad': '%'},
     'freno_del': {'label': 'Freno', 'unidad': '%'},
     'pcomb': {'label': 'Presión de combustible', 'unidad': 'bar'},
     'taceite': {'label': 'Temperatura de aceite', 'unidad': '°C'},
     'paceite': {'label': 'Presión de aceite', 'unidad': 'bar'},
-    'map': {'label': 'Presión colector (MAP)', 'unidad': 'kPa'},
+    'map': {'label': 'Presión Absoluta del Colector (MAP)', 'unidad': 'kPa'},
     'lambda': {'label': 'Lambda (AFR)', 'unidad': 'λ'},
 }
 
