@@ -51,8 +51,12 @@ jobs:
 
       - name: Run migrations
         working-directory: Plataform_Web
+        env:
+          DB_HOST: 127.0.0.1
         run: python manage.py migrate
 
       - name: Run tests
         working-directory: Plataform_Web
+        env:
+          DB_HOST: 127.0.0.1
         run: python manage.py test

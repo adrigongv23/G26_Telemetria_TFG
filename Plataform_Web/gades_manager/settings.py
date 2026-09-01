@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'formula_gades_bd',  # El nombre exacto que pusiste en Workbench
         'USER': 'root',
         'PASSWORD': 'admin1234',   # ¡La que apuntaste en el papel!
-        'HOST': 'localhost',           # Significa "este ordenador"
+        'HOST': os.environ.get('DB_HOST', 'localhost'),  # 'localhost' en local (socket), 127.0.0.1 en CI (TCP)
         'PORT': '3306',
     }
 }
