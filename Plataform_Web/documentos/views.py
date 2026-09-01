@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 
@@ -12,6 +12,7 @@ from .forms import DocumentoForm, DocumentoEditForm, FacturaForm, FacturaEditFor
 
 
 @login_required
+@require_GET
 def documentos_area(request, especialidad):
     area_nombre = get_area_nombre(especialidad)
     if area_nombre is None:
@@ -89,6 +90,7 @@ def eliminar_documento(request, pk):
 
 
 @login_required
+@require_GET
 def facturas_area(request, especialidad):
     area_nombre = get_area_nombre(especialidad)
     if area_nombre is None:

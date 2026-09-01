@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.db.models import Sum
 from datetime import date
 
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from temporadas.models import Temporada
 from documentos.models import Documento, Factura
@@ -28,7 +29,18 @@ DOSSIER_NOMBRES = {
 }
 
 
+def _safe_next(request, default='contabilidad'):
+    """Devuelve request.POST['next'] solo si apunta a este mismo sitio, para evitar redirecciones abiertas."""
+    next_url = request.POST.get('next')
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return next_url
+    return default
+
+
 @login_required
+@require_GET
 def inicio(request):
     temporada_activa = Temporada.objects.filter(actual=True).first()
 
@@ -46,6 +58,7 @@ def inicio(request):
 
 
 @login_required
+@require_GET
 def area_tecnica(request, especialidad):
     area_nombre = get_area_nombre(especialidad)
     if area_nombre is None:
@@ -167,7 +180,7 @@ def aceptar_factura(request, pk):
     if not es_gestor_area(request.user, factura.categoria):
         raise PermissionDenied('Solo el Jefe de Área o Directiva pueden aceptar esta factura.')
 
-    next_url = request.POST.get('next') or 'contabilidad'
+    next_url = _safe_next(request)
 
     temporada_actual = Temporada.objects.filter(actual=True).first()
     if not temporada_actual:
@@ -197,7 +210,7 @@ def rechazar_factura(request, pk):
     if not es_gestor_area(request.user, factura.categoria):
         raise PermissionDenied('Solo el Jefe de Área o Directiva pueden rechazar esta factura.')
 
-    next_url = request.POST.get('next') or 'contabilidad'
+    next_url = _safe_next(request)
 
     factura.estado = 'rechazada'
     factura.save()
@@ -206,6 +219,7 @@ def rechazar_factura(request, pk):
 
 
 @login_required
+@require_GET
 def patrocinios(request):
     temporada_actual = Temporada.objects.filter(actual=True).first()
     pendientes = []

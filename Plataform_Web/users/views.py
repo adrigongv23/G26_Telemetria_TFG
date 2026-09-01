@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from .decorators import require_rol
@@ -47,6 +47,7 @@ def mi_perfil(request):
 
 
 @login_required
+@require_GET
 def listado_miembros(request):
     miembros = CustomUser.objects.all().order_by('last_name', 'first_name')
 
@@ -73,6 +74,7 @@ def listado_miembros(request):
 
 
 @login_required
+@require_GET
 def miembros_area(request, especialidad):
     area_nombre = get_area_nombre(especialidad)
     if area_nombre is None:

@@ -15,6 +15,11 @@ env/
 /media/
 /staticfiles/
 
+# Coverage
+.coverage
+coverage.xml
+.scannerwork/
+
 # Environment variables
 .env
 .env.local

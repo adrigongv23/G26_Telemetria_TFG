@@ -1,4 +1,5 @@
 asgiref==3.11.1
+coverage==7.6.10
 Django==6.0.2
 mysqlclient==2.2.8
 numpy==2.5.2

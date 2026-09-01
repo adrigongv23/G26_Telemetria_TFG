@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from users.decorators import require_rol
 from temporadas.models import Temporada
 from .models import Prueba, Telemetria, Variable
@@ -14,6 +14,7 @@ def puede_subir_csv(user):
 
 
 @login_required
+@require_GET
 def listado_pruebas(request):
     temporada_actual = Temporada.objects.filter(actual=True).first()
     temporada_id = request.GET.get('temporada') or (temporada_actual.pk if temporada_actual else None)
@@ -35,6 +36,7 @@ def listado_pruebas(request):
 
 
 @login_required
+@require_GET
 def detalle_prueba(request, pk):
     prueba = get_object_or_404(Prueba, pk=pk)
     puede_editar = request.user.rol == 'directiva' or (
@@ -114,6 +116,7 @@ def subir_csv(request, pk):
 
 
 @login_required
+@require_GET
 def ver_csv(request, pk):
     telemetria = get_object_or_404(Telemetria, pk=pk)
 

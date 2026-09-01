@@ -9,10 +9,61 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: admin1234
+          MYSQL_DATABASE: formula_gades_bd
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install system dependencies for mysqlclient
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev build-essential pkg-config
+
+      - name: Install dependencies
+        working-directory: Plataform_Web
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -padmin1234 --silent; do
+            sleep 2
+          done
+
+      - name: Run migrations
+        working-directory: Plataform_Web
+        env:
+          DB_HOST: 127.0.0.1
+        run: python manage.py migrate
+
+      - name: Run tests with coverage
+        working-directory: Plataform_Web
+        env:
+          DB_HOST: 127.0.0.1
+        run: |
+          coverage run manage.py test
+          coverage xml -o coverage.xml
 
       - name: SonarQube Cloud Scan
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
